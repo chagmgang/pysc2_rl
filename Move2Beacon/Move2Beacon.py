@@ -42,7 +42,7 @@ def train():
         targetDQN = DQN(sess, 2, 4, name='target')
         #sess.run(tf.global_variables_initializer())
         saver = tf.train.Saver()
-        saver.restore(sess, './project/model.cpkt')
+        saver.restore(sess, './Move2Beacon/model.cpkt')
         copy_ops = get_copy_var_ops(dest_scope_name="target",
                                     src_scope_name="main")
         sess.run(copy_ops)
@@ -94,7 +94,7 @@ def train():
                         loss, _ = replay_train(mainDQN, targetDQN, minibatch)
                         sess.run(copy_ops)
                         print('model trained')
-                        saver.save(sess, './project/model.cpkt')
+                        saver.save(sess, './Move2Beacon/model.cpkt')
                     print(reward, episodes, random_rate/global_step)
                     break
                 state = next_state
@@ -108,7 +108,7 @@ def test():
         targetDQN = DQN(sess, 2, 4, name='target')
         #sess.run(tf.global_variables_initializer())
         saver = tf.train.Saver()
-        saver.restore(sess, './project/model.cpkt')
+        saver.restore(sess, './Move2Beacon/model.cpkt')
         copy_ops = get_copy_var_ops(dest_scope_name="target",
                                     src_scope_name="main")
         sess.run(copy_ops)
