@@ -13,7 +13,7 @@ class DQN:
 
         self._build_network()
 
-    def _build_network(self, h_size=16, l_rate=0.0001):
+    def _build_network(self, h_size=16, l_rate=0.01):
         with tf.variable_scope(self.net_name):
             self._X = tf.placeholder(tf.float32, [None, self.input_size], name="input_x")
             net = tf.layers.dense(self._X, 30, activation=tf.nn.relu)

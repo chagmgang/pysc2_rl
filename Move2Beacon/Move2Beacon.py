@@ -40,9 +40,9 @@ def train():
         sess = tf.Session()
         mainDQN = DQN(sess, 2, 4, name='main')
         targetDQN = DQN(sess, 2, 4, name='target')
-        #sess.run(tf.global_variables_initializer())
+        sess.run(tf.global_variables_initializer())
         saver = tf.train.Saver()
-        saver.restore(sess, './Move2Beacon/model.cpkt')
+        #saver.restore(sess, './Move2Beacon/model.cpkt')
         copy_ops = get_copy_var_ops(dest_scope_name="target",
                                     src_scope_name="main")
         sess.run(copy_ops)
@@ -69,8 +69,8 @@ def train():
                 #action = np.argmax(mainDQN.predict(state))
                 actions = actAgent2Pysc2(action,obs)
                 obs = env.step(actions=[actions])
-                for i in range(1):
-                    actions = actAgent2Pysc2(100,obs)
+                for i in range(3):
+                    actions = no_operation(obs)
                     obs = env.step(actions=[actions])
                 distance = obs2distance(obs)
                 if global_step == 1:
@@ -78,9 +78,9 @@ def train():
                 next_state = obs2state(obs)
                 reward = -(distance-pre_distance)*400
                 #print(reward)
-                if distance < 0.02 or global_step == 200:   # 게임 종료시
-                    if distance < 0.02:
-                        reward = 50
+                if distance < 0.03 or global_step == 200:   # 게임 종료시
+                    if distance < 0.03:
+                        reward = 10
                     if global_step == 200:
                         reward = -10
                     done = True
@@ -88,7 +88,7 @@ def train():
                 #print(next_state, reward)
                 replay_buffer.append((state, action, reward, next_state, done))
                 
-                if distance < 0.02 or global_step == 200:   # 게임 종료시
+                if distance < 0.03 or global_step == 200:   # 게임 종료시
                     if len(replay_buffer) > BATCH_SIZE:
                         minibatch = random.sample(replay_buffer, BATCH_SIZE)
                         loss, _ = replay_train(mainDQN, targetDQN, minibatch)
@@ -131,22 +131,18 @@ def test():
                 action = np.argmax(mainDQN.predict(state))
                 actions = actAgent2Pysc2(action,obs)
                 obs = env.step(actions=[actions])
-                for i in range(1):
-                    actions = actAgent2Pysc2(100,obs)
+                for i in range(3):
+                    actions = no_operation(obs)
                     obs = env.step(actions=[actions])
                 distance = obs2distance(obs)
                 if global_step == 1:
                     pre_distance = distance
                 next_state = obs2state(obs)
                 reward = -(distance-pre_distance)*400
-                if distance < 0.02 or global_step == 200:   # 게임 종료시
-                    if distance < 0.02:
-                        reward = 50
-                    if global_step == 200:
-                        reward = -10
+                if distance < 0.04 or global_step == 200:   # 게임 종료시
                     done = True
                 
-                if distance < 0.02 or global_step == 200:   # 게임 종료시
+                if distance < 0.04 or global_step == 200:   # 게임 종료시
                     print(reward, episodes, random_rate/global_step)
                     break
                 state = next_state
