@@ -100,55 +100,6 @@ def train():
                 state = next_state
                 pre_distance = distance
 
-def test():
-    FLAGS(sys.argv)
-    with sc2_env.SC2Env(map_name="MoveToBeacon", step_mul=step_mul) as env:
-        sess = tf.Session()
-        mainDQN = DQN(sess, 2, 4, name='main')
-        targetDQN = DQN(sess, 2, 4, name='target')
-        #sess.run(tf.global_variables_initializer())
-        saver = tf.train.Saver()
-        saver.restore(sess, './Move2Beacon/model.cpkt')
-        copy_ops = get_copy_var_ops(dest_scope_name="target",
-                                    src_scope_name="main")
-        sess.run(copy_ops)
-        for episodes in range(EPISODES):
-            done = False
-            obs = env.reset()
-            while not 331 in obs[0].observation["available_actions"]:
-                actions = actAgent2Pysc2(100,obs)
-                obs = env.step(actions=[actions])
-            state = obs2state(obs)
-            print('episode start')
-            global_step = 0
-            random_rate = 0
-            e = 1. / ((episodes / 10) + 1)
-            reward = 0
-            while not done: 
-                time.sleep(0.13)
-                global_step += 1
-
-                action = np.argmax(mainDQN.predict(state))
-                actions = actAgent2Pysc2(action,obs)
-                obs = env.step(actions=[actions])
-                for i in range(3):
-                    actions = no_operation(obs)
-                    obs = env.step(actions=[actions])
-                distance = obs2distance(obs)
-                if global_step == 1:
-                    pre_distance = distance
-                next_state = obs2state(obs)
-                reward = -(distance-pre_distance)*400
-                if distance < 0.015 or global_step == 200:   # 게임 종료시
-                    done = True
-                
-                if distance < 0.015 or global_step == 200:   # 게임 종료시
-                    print(reward, episodes, random_rate/global_step)
-                    break
-                state = next_state
-                pre_distance = distance
-
-
 if __name__ == '__main__':
     #train()
     test()
