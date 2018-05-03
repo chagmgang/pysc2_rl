@@ -30,7 +30,7 @@ def obs2state(obs):
     marin_x, marin_y, beacon_x, beacon_y = np.mean(marin_x), np.mean(marin_y), np.mean(beacon_x), np.mean(beacon_y)
 
     #return [marin_x/63, marin_y/63, beacon_x/63, beacon_y/63]
-    return [marin_x/63 - beacon_x/63,  marin_y/63 - beacon_y/63]
+    return [marin_x*10/63 - beacon_x*10/63,  marin_y*10/63 - beacon_y*10/63]
 
 def obs2distance(obs):
     marin_y, marin_x = (obs[0].observation["screen"][_PLAYER_RELATIVE] == friendly).nonzero()

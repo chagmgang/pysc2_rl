@@ -13,7 +13,7 @@ import tensorflow as tf
 from collections import deque
 import time
 import math
-from dqn import DQN, get_copy_var_ops, replay_train
+from A2C import Actor, Critic
 # Define the constant
 _PLAYER_RELATIVE = features.SCREEN_FEATURES.player_relative.index
 _UNIT_TYPE = features.SCREEN_FEATURES.unit_type.index
@@ -36,37 +36,24 @@ BATCH_SIZE = 500
 def train():
     FLAGS(sys.argv)
     with sc2_env.SC2Env(map_name="MoveToBeacon", step_mul=step_mul) as env:
-        replay_buffer = deque(maxlen=1000)
         sess = tf.Session()
-        mainDQN = DQN(sess, 2, 4, name='main')
-        targetDQN = DQN(sess, 2, 4, name='target')
+        actor = Actor(sess, n_features=2, n_actions=4, lr=0.001)
+        critic = Critic(sess, n_features=2, lr=0.001)
         sess.run(tf.global_variables_initializer())
-        saver = tf.train.Saver()
-        #saver.restore(sess, './Move2Beacon/model.cpkt')
-        copy_ops = get_copy_var_ops(dest_scope_name="target",
-                                    src_scope_name="main")
-        sess.run(copy_ops)
         for episodes in range(EPISODES):
             done = False
             obs = env.reset()
             while not 331 in obs[0].observation["available_actions"]:
                 actions = actAgent2Pysc2(100,obs)
                 obs = env.step(actions=[actions])
-            state = obs2state(obs)
+            state = np.array(obs2state(obs))
             print('episode start')
             global_step = 0
-            random_rate = 0
-            e = 1. / ((episodes / 10) + 1)
             reward = 0
             while not done: 
                 global_step += 1
                 time.sleep(0.05)
-                if np.random.rand() < e:
-                    random_rate += 1
-                    action = random.randrange(4)
-                else:
-                    action = np.argmax(mainDQN.predict(state))
-                #action = np.argmax(mainDQN.predict(state))
+                action = actor.choose_action(state)
                 actions = actAgent2Pysc2(action,obs)
                 obs = env.step(actions=[actions])
                 for i in range(3):
@@ -75,9 +62,9 @@ def train():
                 distance = obs2distance(obs)
                 if global_step == 1:
                     pre_distance = distance
-                next_state = obs2state(obs)
+                next_state = np.array(obs2state(obs))
                 reward = -(distance-pre_distance)*400
-                #print(reward)
+                
                 if distance < 0.03 or global_step == 200:   # 게임 종료시
                     if distance < 0.03:
                         reward = 10
@@ -85,21 +72,13 @@ def train():
                         reward = -10
                     done = True
                 
-                #print(next_state, reward)
-                replay_buffer.append((state, action, reward, next_state, done))
-                
+                td_error = critic.learn(state, reward, next_state)
+                actor.learn(state, action, td_error)
+
                 if distance < 0.03 or global_step == 200:   # 게임 종료시
-                    if len(replay_buffer) > BATCH_SIZE:
-                        minibatch = random.sample(replay_buffer, BATCH_SIZE)
-                        loss, _ = replay_train(mainDQN, targetDQN, minibatch)
-                        sess.run(copy_ops)
-                        print('model trained')
-                        saver.save(sess, './Move2Beacon/model.cpkt')
-                    print(reward, episodes, random_rate/global_step)
                     break
                 state = next_state
                 pre_distance = distance
 
 if __name__ == '__main__':
-    #train()
-    test()
+    train()
