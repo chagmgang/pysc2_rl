@@ -108,7 +108,7 @@ def test():
         targetDQN = DQN(sess, 2, 4, name='target')
         #sess.run(tf.global_variables_initializer())
         saver = tf.train.Saver()
-        saver.restore(sess, './Move2Beacon/model.cpkt')
+        saver.restore(sess, './Move2Beacon(DQN)/model.cpkt')
         copy_ops = get_copy_var_ops(dest_scope_name="target",
                                     src_scope_name="main")
         sess.run(copy_ops)
@@ -131,7 +131,7 @@ def test():
                 action = np.argmax(mainDQN.predict(state))
                 actions = actAgent2Pysc2(action,obs)
                 obs = env.step(actions=[actions])
-                for i in range(3):
+                for i in range(1):
                     actions = no_operation(obs)
                     obs = env.step(actions=[actions])
                 distance = obs2distance(obs)
