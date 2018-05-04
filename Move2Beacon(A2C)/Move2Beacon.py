@@ -52,7 +52,7 @@ def train():
             reward = 0
             while not done: 
                 global_step += 1
-                time.sleep(0.05)
+                time.sleep(0.2)
                 action = actor.choose_action(state)
                 actions = actAgent2Pysc2(action,obs)
                 obs = env.step(actions=[actions])
