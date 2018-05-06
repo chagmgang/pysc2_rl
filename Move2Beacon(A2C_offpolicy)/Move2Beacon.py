@@ -30,7 +30,7 @@ _SELECT_ALL  = [0]
 _NOT_QUEUED  = [0]
 step_mul = 4
 FLAGS = flags.FLAGS
-EPISODES = 10000
+EPISODES = 200
 BATCH_SIZE = 500
 action_number = 4
 feature_number = 2
@@ -41,13 +41,11 @@ def train():
         sess = tf.Session()
         actor = Actor(sess, n_features=feature_number, n_actions=action_number, lr=0.001)
         critic = Critic(sess, n_features=feature_number, lr=0.001)
-        sess.run(tf.global_variables_initializer())
-        spend_time = tf.placeholder(tf.float32)
-        rr = tf.summary.scalar('reward', spend_time)
-        writer = tf.summary.FileWriter('./board/off_a2c', sess.graph)
-        merged = tf.summary.merge_all()
-        
-
+        #spend_time = tf.placeholder(tf.float32)
+        #rr = tf.summary.scalar('reward', spend_time)
+        #writer = tf.summary.FileWriter('./Move2Beacon(A2C_offpolicy)/board/off_a2c', sess.graph)
+        saver = tf.train.Saver()
+        #merged = tf.summary.merge_all()
         for episodes in range(EPISODES):
             done = False
             obs = env.reset()
@@ -104,8 +102,9 @@ def train():
                     discouned_rewards = discount_rewards(rewards)
                     td_error = critic.learn(states, discouned_rewards, next_states)
                     actor.learn(states, actions_list, td_error)
-                    summary = sess.run(merged, feed_dict={spend_time: global_step})
-                    writer.add_summary(summary, episodes)
+                    #summary = sess.run(merged, feed_dict={spend_time: global_step})
+                    #writer.add_summary(summary, episodes)
+                    #saver.save(sess, './Move2Beacon(A2C_offpolicy)/model/model.ckpt')
                     break
                 state = next_state
                 pre_distance = distance
