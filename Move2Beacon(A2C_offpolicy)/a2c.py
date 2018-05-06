@@ -15,6 +15,8 @@ class Actor(object):
             l1 = tf.layers.dense(inputs=self.s, units=20, activation=tf.nn.relu)
             l1 = tf.layers.dense(inputs=l1, units=20, activation=tf.nn.relu)
             l1 = tf.layers.dense(inputs=l1, units=20, activation=tf.nn.relu)
+            l1 = tf.layers.dense(inputs=l1, units=20, activation=tf.nn.relu)
+            l1 = tf.layers.dense(inputs=l1, units=20, activation=tf.nn.relu)
             self.acts_prob = tf.layers.dense(l1, n_actions, activation=tf.nn.softmax)
 
         with tf.variable_scope('exp_v'):
@@ -45,6 +47,8 @@ class Critic(object):
 
         with tf.variable_scope('Critic'):
             l1 = tf.layers.dense(inputs=self.s, units=20, activation=tf.nn.tanh)
+            l1 = tf.layers.dense(inputs=l1, units=20, activation=tf.nn.tanh)
+            l1 = tf.layers.dense(inputs=l1, units=20, activation=tf.nn.tanh)
             l1 = tf.layers.dense(inputs=l1, units=20, activation=tf.nn.tanh)
             l1 = tf.layers.dense(inputs=l1, units=20, activation=tf.nn.tanh)
             W = tf.Variable(tf.random_normal([20, 1]))

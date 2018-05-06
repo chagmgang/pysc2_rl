@@ -39,23 +39,24 @@ def train():
     FLAGS(sys.argv)
     with sc2_env.SC2Env(map_name="MoveToBeacon", step_mul=step_mul) as env:
         sess = tf.Session()
-        actor = Actor(sess, n_features=feature_number, n_actions=action_number, lr=0.005)
-        critic = Critic(sess, n_features=feature_number, lr=0.005)
+        actor = Actor(sess, n_features=feature_number, n_actions=action_number, lr=0.001)
+        critic = Critic(sess, n_features=feature_number, lr=0.001)
         sess.run(tf.global_variables_initializer())
+        spend_time = tf.placeholder(tf.float32)
+        rr = tf.summary.scalar('reward', spend_time)
+        writer = tf.summary.FileWriter('./board/off_a2c', sess.graph)
+        merged = tf.summary.merge_all()
+        
+
         for episodes in range(EPISODES):
             done = False
             obs = env.reset()
-            #for i in range(30):
-            #    actions = no_operation(obs)
-            #    obs = env.step(actions=[actions])
-            #while not 331 in obs[0].observation["available_actions"]:
-            #    actions = actAgent2Pysc2(100,obs)
-            #    obs = env.step(actions=[actions])
             state = np.array(obs2state(obs))
             global_step = 0
             reward = 0
             end_distance = 0.02
             end_step = 100
+
             states = np.empty(shape=[0,feature_number])
             next_states = np.empty(shape=[0,feature_number])
             rewards = np.empty(shape=[0,1])
@@ -63,7 +64,7 @@ def train():
             
             while not done: 
                 global_step += 1
-                time.sleep(0.01)
+                time.sleep(0.05)
                 while not 331 in obs[0].observation["available_actions"]:
                     actions = actAgent2Pysc2(100, obs)
                     obs = env.step(actions=[actions])
@@ -80,12 +81,12 @@ def train():
                 reward = -np.sign(distance-pre_distance)
                 if reward == 0:
                     reward = -1
-                #reward = -(distance-pre_distance)*400
+                reward = 0
                 if distance < end_distance or global_step == end_step:   # 게임 종료시
                     if distance < end_distance:
-                        reward = 10
+                        reward = 100
                     if global_step == end_step:
-                        reward = -10
+                        reward = -100
                     done = True
                 
                 states = np.vstack([states, state])
@@ -103,6 +104,8 @@ def train():
                     discouned_rewards = discount_rewards(rewards)
                     td_error = critic.learn(states, discouned_rewards, next_states)
                     actor.learn(states, actions_list, td_error)
+                    summary = sess.run(merged, feed_dict={spend_time: global_step})
+                    writer.add_summary(summary, episodes)
                     break
                 state = next_state
                 pre_distance = distance
