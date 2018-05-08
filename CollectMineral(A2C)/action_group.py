@@ -25,6 +25,14 @@ _RALLY_UNITS_SCREEN = actions.FUNCTIONS.Rally_Units_screen.id
 _SELECT_ALL  = [0]
 _NOT_QUEUED  = [0]
 
+def gather(obs):
+    marine_y, marine_x = (obs[0].observation["screen"][_PLAYER_RELATIVE] == friendly).nonzero()
+    marine_x, marine_y = np.mean(marine_x), np.mean(marine_y)
+    action = actions.FunctionCall(_MOVE_SCREEN, [_NOT_QUEUED, [marine_x, marine_y]])
+
+    return action
+
+
 def no_operation(obs):
     action = actions.FunctionCall(actions.FUNCTIONS.no_op.id, [])
     return action
