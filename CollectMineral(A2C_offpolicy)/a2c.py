@@ -12,11 +12,14 @@ class Actor(object):
         self.td_error = tf.placeholder(tf.float32, None, "td_error")  # TD_error
 
         with tf.variable_scope('Actor'):
-            l1 = tf.layers.dense(inputs=self.s, units=20, activation=tf.nn.relu)
-            l1 = tf.layers.dense(inputs=l1, units=20, activation=tf.nn.relu)
-            l1 = tf.layers.dense(inputs=l1, units=20, activation=tf.nn.relu)
-            l1 = tf.layers.dense(inputs=l1, units=20, activation=tf.nn.relu)
-            l1 = tf.layers.dense(inputs=l1, units=20, activation=tf.nn.relu)
+            l1 = tf.layers.dense(inputs=self.s, units=2000, activation=tf.nn.elu)
+            l1 = tf.layers.dense(inputs=l1, units=1000, activation=tf.nn.elu)
+            l1 = tf.layers.dense(inputs=l1, units=500, activation=tf.nn.elu)
+            l1 = tf.layers.dense(inputs=l1, units=250, activation=tf.nn.elu)
+            l1 = tf.layers.dense(inputs=l1, units=120, activation=tf.nn.elu)
+            l1 = tf.layers.dense(inputs=l1, units=120, activation=tf.nn.elu)
+            l1 = tf.layers.dense(inputs=l1, units=120, activation=tf.nn.elu)
+            l1 = tf.layers.dense(inputs=l1, units=120, activation=tf.nn.elu)
             self.acts_prob = tf.layers.dense(l1, n_actions, activation=tf.nn.softmax)
 
         with tf.variable_scope('exp_v'):
@@ -46,13 +49,15 @@ class Critic(object):
         self.r = tf.placeholder(tf.float32, None, 'r')
 
         with tf.variable_scope('Critic'):
-            l1 = tf.layers.dense(inputs=self.s, units=20, activation=tf.nn.tanh)
-            l1 = tf.layers.dense(inputs=l1, units=20, activation=tf.nn.tanh)
-            l1 = tf.layers.dense(inputs=l1, units=20, activation=tf.nn.tanh)
-            l1 = tf.layers.dense(inputs=l1, units=20, activation=tf.nn.tanh)
-            l1 = tf.layers.dense(inputs=l1, units=20, activation=tf.nn.tanh)
-            W = tf.Variable(tf.random_normal([20, 1]))
-            self.v = tf.matmul(l1, W)
+            l1 = tf.layers.dense(inputs=self.s, units=2000, activation=tf.nn.elu)
+            l1 = tf.layers.dense(inputs=l1, units=1000, activation=tf.nn.elu)
+            l1 = tf.layers.dense(inputs=l1, units=500, activation=tf.nn.elu)
+            l1 = tf.layers.dense(inputs=l1, units=250, activation=tf.nn.elu)
+            l1 = tf.layers.dense(inputs=l1, units=120, activation=tf.nn.elu)
+            l1 = tf.layers.dense(inputs=l1, units=120, activation=tf.nn.elu)
+            l1 = tf.layers.dense(inputs=l1, units=120, activation=tf.nn.elu)
+            l1 = tf.layers.dense(inputs=l1, units=120, activation=tf.nn.elu)
+            self.v = tf.layers.dense(inputs=l1, units=1, activation=tf.nn.elu)
 
         with tf.variable_scope('squared_TD_error'):
             GAMMA = 0.99

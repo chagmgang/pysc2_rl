@@ -6,7 +6,7 @@ import matplotlib
 matplotlib.use('TkAgg')
 import matplotlib.pyplot as plt
 from action_group import actAgent2Pysc2, no_operation, gather
-from state_group import obs2state
+from state_group import obs2state, obs2done
 import numpy as np
 import random
 import tensorflow as tf
@@ -33,7 +33,7 @@ FLAGS = flags.FLAGS
 EPISODES = 200
 BATCH_SIZE = 500
 action_number = 4
-feature_number = 2
+feature_number = 64*64
 # main function, create env, define model, learn from observation and save model
 def train():
     FLAGS(sys.argv)
@@ -53,7 +53,7 @@ def train():
             for i in range(130):
                 actions = no_operation(obs)
                 obs = env.step(actions=[actions])
-            state = obs2state(obs)
+            state = obs2state(obs).reshape(64*64)
             end_step = 200
             global_step = 0
             print('episode start')
@@ -61,9 +61,11 @@ def train():
                 global_step += 1
                 actions = no_operation(obs)
                 obs = env.step(actions=[actions])
-                next_state = obs2state(obs)
+                next_state = obs2state(obs).reshape(64*64)
+                reward = obs[0].reward
+                done = obs2done(obs, global_step, end_step)
 
-                if global_step == end_step:   # 게임 종료시
+                if done:   # 게임 종료시
                     break
                 state = next_state
 if __name__ == '__main__':
