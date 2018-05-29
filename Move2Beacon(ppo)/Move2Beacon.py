@@ -61,7 +61,7 @@ def train():
 
                 while not done: 
                     global_step += 1
-                    time.sleep(0.2)
+                    time.sleep(0.05)
 
                     state = np.stack([state]).astype(dtype=np.float32)
                     act, v_pred = Policy.act(obs=state, stochastic=True)
@@ -79,10 +79,10 @@ def train():
                     reward = -(distance-pre_distance)
                     
                     if reward <= 0:
-                        reward = -0.01
+                        reward = 0
                     elif reward > 0:
-                        reward = 0.01
-
+                        reward = 0
+                    reward = -0.01
                     if distance < 0.03 or global_step == 100:   # 게임 종료시
                         if distance < 0.03:
                             reward = 1
