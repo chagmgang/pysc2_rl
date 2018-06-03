@@ -25,13 +25,10 @@ _SELECT_ALL  = [0]
 _NOT_QUEUED  = [0]
 
 def obs2state(obs):
-    marine_map = (obs[0].observation["screen"][_PLAYER_RELATIVE])
-    return marine_map
-
-def obs2reward(obs):
-    mineral_y, mineral_x = (obs[0].observation["screen"][_PLAYER_RELATIVE] == neutral).nonzero()
-    print(len(mineral_x))
-    return 1
+    marine_map = np.array((obs[0].observation["screen"][_SELECTED_UNIT]), dtype=np.int32)
+    mineral_map = np.array((obs[0].observation["screen"][_PLAYER_RELATIVE] == neutral), dtype=np.int32)
+    state = np.dstack((marine_map, mineral_map)).reshape(64*64*2)
+    return state
 
 def obs2done(obs, global_step, end_step):
     mineral_y, mineral_x = (obs[0].observation["screen"][_PLAYER_RELATIVE] == neutral).nonzero()

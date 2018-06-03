@@ -65,5 +65,6 @@ def actAgent2Pysc2(i, obs):
     elif i == 3:
         action = move_unit(obs, 4)
     elif i ==100:
-        action = actions.FunctionCall(_SELECT_ARMY, [_SELECT_ALL])
+        marine_y, marine_x = (obs[0].observation["screen"][_PLAYER_RELATIVE] == friendly).nonzero()
+        action = actions.FunctionCall(_SELECT_POINT, [_NOT_QUEUED, [marine_x[0], marine_y[0]]])
     return action
