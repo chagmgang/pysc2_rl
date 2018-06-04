@@ -79,7 +79,7 @@ def train():
                     next_state = np.array(obs2state(obs))
                     reward = -10*(distance-pre_distance)
                     if reward < 0 :
-                        reward = -0.1
+                        reward = -0.01
                     #if reward <= 0:
                     #    reward = 0
                     #elif reward > 0:
@@ -87,9 +87,9 @@ def train():
                     #reward = -0.05
                     if distance < 0.03 or global_step == 100:   # 게임 종료시
                         if distance < 0.03:
-                            reward = 10
+                            reward = 1
                         if global_step == 200:
-                            reward = -10
+                            reward = -1
                         done = True
                     
                     observations.append(state)
