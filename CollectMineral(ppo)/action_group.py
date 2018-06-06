@@ -44,13 +44,13 @@ def move_unit(obs, mode):       # mode= 1,2,3,4 & up,down,left,right
     target_x, target_y = np.mean(selected_unit_position_x), np.mean(selected_unit_position_y)
 
     if mode == 1:   #up
-        dest_x, dest_y = np.clip(target_x, 0, 63), np.clip(target_y - 10, 0, 63)
+        dest_x, dest_y = np.clip(target_x, 0, 15), np.clip(target_y - 3, 0, 15)
     elif mode == 2: #down
-        dest_x, dest_y = np.clip(target_x, 0, 63), np.clip(target_y + 10, 0, 63)
+        dest_x, dest_y = np.clip(target_x, 0, 15), np.clip(target_y + 3, 0, 15)
     elif mode == 3: #left
-        dest_x, dest_y = np.clip(target_x - 10, 0, 63), np.clip(target_y, 0, 63)
+        dest_x, dest_y = np.clip(target_x - 3, 0, 15), np.clip(target_y, 0, 15)
     elif mode == 4: #right
-        dest_x, dest_y = np.clip(target_x + 10, 0, 63), np.clip(target_y, 0, 63)
+        dest_x, dest_y = np.clip(target_x + 3, 0, 15), np.clip(target_y, 0, 15)
     action = actions.FunctionCall(_MOVE_SCREEN, [_NOT_QUEUED, [dest_x, dest_y]])  # move Up
 
     return action
@@ -65,6 +65,5 @@ def actAgent2Pysc2(i, obs):
     elif i == 3:
         action = move_unit(obs, 4)
     elif i ==100:
-        marine_y, marine_x = (obs[0].observation["screen"][_PLAYER_RELATIVE] == friendly).nonzero()
-        action = actions.FunctionCall(_SELECT_POINT, [_NOT_QUEUED, [marine_x[0], marine_y[0]]])
+        action = actions.FunctionCall(_SELECT_ARMY, [_SELECT_ALL])
     return action
