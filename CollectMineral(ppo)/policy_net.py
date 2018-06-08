@@ -8,7 +8,7 @@ class Policy_net:
 
         with tf.variable_scope(name):
             self.obs = tf.placeholder(dtype=tf.float32, shape=[None, state_size], name='obs')
-            reshape = tf.reshape(self.obs, [-1, 16, 16, 2])
+            reshape = tf.reshape(self.obs, [-1, 32, 32, 2])
             initializer = tf.contrib.layers.xavier_initializer()
             with tf.variable_scope('policy_net'):
                 layer_1 = tf.layers.conv2d(inputs=reshape, filters=8, kernel_size=[3, 3], activation=tf.nn.relu)
@@ -16,9 +16,11 @@ class Policy_net:
                 layer_3 = tf.layers.conv2d(inputs=layer_2, filters=32, kernel_size=[3, 3], activation=tf.nn.relu)
                 layer_4 = tf.layers.conv2d(inputs=layer_3, filters=64, kernel_size=[3, 3], activation=tf.nn.relu)
                 layer_5 = tf.layers.conv2d(inputs=layer_4, filters=128, kernel_size=[3, 3], activation=tf.nn.relu)
-                layer_6 = tf.reshape(layer_5, [-1, 6*6*128])
-                layer_7 = tf.layers.dense(inputs=layer_6, units=64, activation=tf.nn.relu)
-                self.act_probs = tf.layers.dense(inputs=tf.divide(layer_7, temp), units=action_size, activation=tf.nn.softmax)
+                layer_6 = tf.layers.conv2d(inputs=layer_5, filters=256, kernel_size=[3, 3], activation=tf.nn.relu)
+                layer_7 = tf.reshape(layer_6, [-1, 20*20*256])
+                layer_8 = tf.layers.dense(inputs=layer_7, units=22*22, activation=tf.nn.relu)
+                layer_9 = tf.layers.dense(inputs=layer_8, units=64, activation=tf.nn.relu)
+                self.act_probs = tf.layers.dense(inputs=tf.divide(layer_9, temp), units=action_size, activation=tf.nn.softmax)
 
             with tf.variable_scope('value_net'):
                 layer_1 = tf.layers.conv2d(inputs=reshape, filters=8, kernel_size=[3, 3], activation=tf.tanh)
@@ -26,9 +28,11 @@ class Policy_net:
                 layer_3 = tf.layers.conv2d(inputs=layer_2, filters=32, kernel_size=[3, 3], activation=tf.tanh)
                 layer_4 = tf.layers.conv2d(inputs=layer_3, filters=64, kernel_size=[3, 3], activation=tf.tanh)
                 layer_5 = tf.layers.conv2d(inputs=layer_4, filters=128, kernel_size=[3, 3], activation=tf.tanh)
-                layer_6 = tf.reshape(layer_5, [-1, 6*6*128])
-                layer_7 = tf.layers.dense(inputs=layer_6, units=64, activation=None, trainable=True)
-                self.v_preds = tf.layers.dense(inputs=layer_7, units=1, activation=None, trainable=True)
+                layer_6 = tf.layers.conv2d(inputs=layer_5, filters=256, kernel_size=[3, 3], activation=tf.tanh)
+                layer_7 = tf.reshape(layer_6, [-1, 20*20*256])
+                layer_8 = tf.layers.dense(inputs=layer_7, units=22*22, activation=tf.nn.relu)
+                layer_9 = tf.layers.dense(inputs=layer_8, units=64, activation=None, trainable=True)
+                self.v_preds = tf.layers.dense(inputs=layer_9, units=1, activation=None, trainable=True)
 
             self.act_stochastic = tf.multinomial(tf.log(self.act_probs), num_samples=1)
             self.act_stochastic = tf.reshape(self.act_stochastic, shape=[-1])

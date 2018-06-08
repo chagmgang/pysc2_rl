@@ -44,13 +44,13 @@ def move_unit(obs, mode):       # mode= 1,2,3,4 & up,down,left,right
     target_x, target_y = np.mean(selected_unit_position_x), np.mean(selected_unit_position_y)
 
     if mode == 1:   #up
-        dest_x, dest_y = np.clip(target_x, 0, 15), np.clip(target_y - 3, 0, 15)
+        dest_x, dest_y = np.clip(target_x, 0, 31), np.clip(target_y - 3, 0, 31)
     elif mode == 2: #down
-        dest_x, dest_y = np.clip(target_x, 0, 15), np.clip(target_y + 3, 0, 15)
+        dest_x, dest_y = np.clip(target_x, 0, 31), np.clip(target_y + 3, 0, 31)
     elif mode == 3: #left
-        dest_x, dest_y = np.clip(target_x - 3, 0, 15), np.clip(target_y, 0, 15)
+        dest_x, dest_y = np.clip(target_x - 3, 0, 31), np.clip(target_y, 0, 31)
     elif mode == 4: #right
-        dest_x, dest_y = np.clip(target_x + 3, 0, 15), np.clip(target_y, 0, 15)
+        dest_x, dest_y = np.clip(target_x + 3, 0, 31), np.clip(target_y, 0, 31)
     action = actions.FunctionCall(_MOVE_SCREEN, [_NOT_QUEUED, [dest_x, dest_y]])  # move Up
 
     return action

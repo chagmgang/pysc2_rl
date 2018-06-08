@@ -27,7 +27,7 @@ _NOT_QUEUED  = [0]
 def obs2state(obs):
     marine_map = (obs[0].observation["screen"][_SELECTED_UNIT] == friendly)
     mineral_map = (obs[0].observation["screen"][_PLAYER_RELATIVE] == neutral)
-    state = np.dstack((marine_map, mineral_map)).reshape(16*16*2)
+    state = np.dstack((marine_map, mineral_map)).reshape(32*32*2)
     return state
 
 def obs2done(obs):

@@ -38,26 +38,28 @@ feature_number = 64*64
 def train():
     FLAGS(sys.argv)
     with sc2_env.SC2Env(map_name="CollectMineralShards", step_mul=step_mul,
-                        screen_size_px=(16, 16), minimap_size_px=(16, 16)) as env:
-        Policy = Policy_net('policy', 16*16*2, 4)
-        Old_Policy = Policy_net('old_policy', 16*16*2, 4)
+                        screen_size_px=(32, 32), minimap_size_px=(32, 32)) as env:
+        Policy = Policy_net('policy', 32*32*2, 4)
+        Old_Policy = Policy_net('old_policy', 32*32*2, 4)
         PPO = PPOTrain(Policy, Old_Policy, gamma=0.95)
         saver = tf.train.Saver()
         with tf.Session() as sess:
-            sess.run(tf.global_variables_initializer())
+            print('a')
+            saver.restore(sess, './model/model.ckpt')
+            print('a')
+            #sess.run(tf.global_variables_initializer())
             for episodes in range(EPISODES):
                 done = False
                 obs = env.reset()
                 while not 331 in obs[0].observation["available_actions"]:
                     actions = actAgent2Pysc2(100, obs)
                     obs = env.step(actions=[actions])
-                    actions = gather(obs)
-                    obs = env.step(actions=[actions])
+                actions = gather(obs)
+                obs = env.step(actions=[actions])
                 end_step = 200
                 global_step = 0
                 score = 0
                 reward = 0
-                mineral = 0 
                 for i in range(100):
                     time.sleep(0.01)
                     actions = no_operation(obs)
@@ -75,10 +77,10 @@ def train():
                     state = np.stack([state]).astype(dtype=np.float32)
                     act, v_pred = Policy.act(obs=state, stochastic=True)
                     act, v_pred = np.asscalar(act), np.asscalar(v_pred)
-                    while not 331 in obs[0].observation["available_actions"]:
-                        actions = actAgent2Pysc2(100, obs)
-                        obs = env.step(actions=[actions])
                     actions = actAgent2Pysc2(act, obs)
+                    #while not 331 in obs[0].observation["available_actions"]:
+                    #    actions = actAgent2Pysc2(100, obs)
+                    #    obs = env.step(actions=[actions])
                     obs = env.step(actions=[actions])
                     
                     if global_step == end_step or obs2done(obs) >= 1900 :    # 게임 time을 다 사용하거나 미네랄을 다 먹었을 경우 게임이 끝난다.
@@ -86,7 +88,6 @@ def train():
                     
                     next_state = obs2state(obs)
                     reward = obs[0].reward
-                    mineral += reward
 
                     if reward == 0:
                         reward = -0.1
@@ -95,7 +96,7 @@ def train():
                         if obs2done(obs) >= 1900:   # 게임이 종료되었는데 미네랄을 다 먹었으면
                             reward = 3
                         else:                       # 게임이 종료되었는데 미네랄을 다 못먹으면
-                            reward = -3     
+                            reward = -3   
 
                     score += reward
 
@@ -107,7 +108,7 @@ def train():
                     if done:   # 게임 종료시
                         v_preds_next = v_preds[1:] + [0]
                         gaes = PPO.get_gaes(rewards=rewards, v_preds=v_preds, v_preds_next=v_preds_next)
-                        observations = np.reshape(observations, newshape=[-1, 16*16*2])
+                        observations = np.reshape(observations, newshape=[-1, 32*32*2])
                         actions = np.array(actions_list).astype(dtype=np.int32)
                         rewards = np.array(rewards).astype(np.float32)
                         v_preds_next = np.array(v_preds_next).astype(dtype=np.float32)
@@ -126,9 +127,9 @@ def train():
                         print(episodes, score)
                         save_path = saver.save(sess, './model/model.ckpt')
                         if episodes == 0:
-                            f = open('test.csv', 'w', encoding='utf-8', newline='')
+                            f = open('test1.csv', 'w', encoding='utf-8', newline='')
                         else:
-                            f = open('test.csv', 'a', encoding='utf-8', newline='')
+                            f = open('test1.csv', 'a', encoding='utf-8', newline='')
                         wr = csv.writer(f)
                         wr.writerow([episodes, score])
                         f.close()
