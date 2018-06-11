@@ -72,7 +72,7 @@ class PPOTrain:
             tf.summary.scalar('loss', loss)
 
         self.merged = tf.summary.merge_all()
-        optimizer = tf.train.AdamOptimizer(learning_rate=1e-3, epsilon=1e-5)
+        optimizer = tf.train.AdamOptimizer(learning_rate=1e-4, epsilon=1e-5)
         self.train_op = optimizer.minimize(loss, var_list=pi_trainable)
 
     def train(self, obs, actions, rewards, v_preds_next, gaes):

@@ -127,9 +127,9 @@ def train():
                         print(episodes, score)
                         save_path = saver.save(sess, './model/model.ckpt')
                         if episodes == 0:
-                            f = open('test1.csv', 'w', encoding='utf-8', newline='')
+                            f = open('test2.csv', 'w', encoding='utf-8', newline='')
                         else:
-                            f = open('test1.csv', 'a', encoding='utf-8', newline='')
+                            f = open('test2.csv', 'a', encoding='utf-8', newline='')
                         wr = csv.writer(f)
                         wr.writerow([episodes, score])
                         f.close()
