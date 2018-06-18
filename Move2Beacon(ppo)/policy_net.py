@@ -10,10 +10,10 @@ class Policy_net:
             self.obs = tf.placeholder(dtype=tf.float32, shape=[None, state_size], name='obs')
 
             with tf.variable_scope('policy_net'):
-                layer_1 = tf.layers.dense(inputs=self.obs, units=64, activation=tf.tanh)
-                layer_2 = tf.layers.dense(inputs=layer_1, units=64, activation=tf.tanh)
-                layer_3 = tf.layers.dense(inputs=layer_2, units=64, activation=tf.tanh)
-                layer_4 = tf.layers.dense(inputs=layer_3, units=action_size, activation=tf.tanh)
+                layer_1 = tf.layers.dense(inputs=self.obs, units=64, activation=tf.nn.relu)
+                layer_2 = tf.layers.dense(inputs=layer_1, units=64, activation=tf.nn.relu)
+                layer_3 = tf.layers.dense(inputs=layer_2, units=64, activation=tf.nn.relu)
+                layer_4 = tf.layers.dense(inputs=layer_3, units=action_size, activation=tf.nn.relu)
                 self.act_probs = tf.layers.dense(inputs=tf.divide(layer_4, temp), units=action_size, activation=tf.nn.softmax)
 
             with tf.variable_scope('value_net'):

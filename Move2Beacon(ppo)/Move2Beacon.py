@@ -32,7 +32,7 @@ _SELECT_ALL  = [0]
 _NOT_QUEUED  = [0]
 step_mul = 4
 FLAGS = flags.FLAGS
-EPISODES = 10000
+EPISODES = 5000
 BATCH_SIZE = 500
 # main function, create env, define model, learn from observation and save model
 def train():
@@ -50,10 +50,9 @@ def train():
                     actions = actAgent2Pysc2(100,obs)
                     obs = env.step(actions=[actions])
                 state = np.array(obs2state(obs))
-                print('episode start')
                 global_step = 0
                 reward = 0
-
+                score = 0
                 observations = []
                 actions_list = []
                 v_preds = []
@@ -86,10 +85,10 @@ def train():
                     if distance < 0.03 or global_step == 100:   # 게임 종료시
                         if distance < 0.03:
                             reward = 1
-                        if global_step == 200:
+                        if global_step == 100:
                             reward = -1
                         done = True
-                    
+                    score += reward
                     observations.append(state)
                     actions_list.append(act)
                     v_preds.append(v_pred)
@@ -103,7 +102,6 @@ def train():
                         rewards = np.array(rewards).astype(dtype=np.float32)
                         v_preds_next = np.array(v_preds_next).astype(dtype=np.float32)
                         gaes = np.array(gaes).astype(dtype=np.float32)
-                        gaes = (gaes - gaes.mean())
 
                         PPO.assign_policy_parameters()
 
@@ -116,7 +114,7 @@ def train():
                                     rewards=sampled_inp[2],
                                     v_preds_next=sampled_inp[3],
                                     gaes=sampled_inp[4])
-                        print(episodes, global_step)
+                        print(episodes, score, global_step)
                         break
                     state = next_state
                     pre_distance = distance
