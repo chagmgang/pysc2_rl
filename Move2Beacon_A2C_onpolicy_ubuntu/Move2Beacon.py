@@ -37,7 +37,7 @@ def train():
     with sc2_env.SC2Env(
                         map_name='MoveToBeacon',
                         agent_interface_format=sc2_env.parse_agent_interface_format(
-                            feature_screen=84,
+                            feature_screen=64,
                             feature_minimap=64,
                             rgb_screen=None,
                             rgb_minimap=None,
@@ -54,16 +54,17 @@ def train():
         for episodes in range(EPISODES):
             done = False
             obs = env.reset()
+            #plt.imshow(obs[0].observation.feature_screen.base[5])
+            #plt.show()
             while not 331 in obs[0].observation["available_actions"]:
                 actions = actAgent2Pysc2(100,obs)
                 obs = env.step(actions=[actions])
             state = np.array(obs2state(obs))
-            print('episode start')
+            #print('episode start')
             global_step = 0
             reward = 0
             while not done: 
                 global_step += 1
-                time.sleep(0.2)
                 action = actor.choose_action(state)
                 actions = actAgent2Pysc2(action,obs)
                 obs = env.step(actions=[actions])

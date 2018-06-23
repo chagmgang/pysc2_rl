@@ -30,7 +30,7 @@ def no_operation(obs):
 def move_unit(obs, mode):       # mode= 1,2,3,4 & up,down,left,right
 
     selected_unit_position_y, selected_unit_position_x = (
-                obs[0].observation["screen"][_SELECTED_UNIT] == True).nonzero()
+                obs[0].observation.feature_screen.base[5] == friendly).nonzero()
     target_x, target_y = np.mean(selected_unit_position_x), np.mean(selected_unit_position_y)
 
     if mode == 1:   #up
