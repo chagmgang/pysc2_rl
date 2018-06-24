@@ -54,12 +54,20 @@ def train():
         for episodes in range(EPISODES):
             done = False
             obs = env.reset()
-            #plt.imshow(obs[0].observation.feature_screen.base[5])
-            #plt.show()
             while not 331 in obs[0].observation["available_actions"]:
                 actions = actAgent2Pysc2(100,obs)
                 obs = env.step(actions=[actions])
             state = np.array(obs2state(obs))
+            plt.imshow(obs[0].observation.feature_screen.base[0])
+            plt.show()
+            plt.imshow(obs[0].observation.feature_screen.base[1])
+            plt.show()
+            plt.imshow(obs[0].observation.feature_screen.base[2])
+            plt.show()
+            plt.imshow(obs[0].observation.feature_screen.base[3])
+            plt.show()
+            plt.imshow(obs[0].observation.feature_screen.base[4])
+            plt.show()
             #print('episode start')
             global_step = 0
             reward = 0
