@@ -58,16 +58,6 @@ def train():
                 actions = actAgent2Pysc2(100,obs)
                 obs = env.step(actions=[actions])
             state = np.array(obs2state(obs))
-            plt.imshow(obs[0].observation.feature_screen.base[0])
-            plt.show()
-            plt.imshow(obs[0].observation.feature_screen.base[1])
-            plt.show()
-            plt.imshow(obs[0].observation.feature_screen.base[2])
-            plt.show()
-            plt.imshow(obs[0].observation.feature_screen.base[3])
-            plt.show()
-            plt.imshow(obs[0].observation.feature_screen.base[4])
-            plt.show()
             #print('episode start')
             global_step = 0
             reward = 0
